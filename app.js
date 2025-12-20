@@ -3,13 +3,24 @@ const Pi = window.Pi;
 Pi.init({ version: "2.0", sandbox: true });
 
 async function login() {
+    // Tambahkan notifikasi log untuk debugging di konsol
+    console.log("Fungsi login terpanggil...");
+    
     try {
-        // Memulai proses login/autentikasi
+        // Cek apakah SDK sudah siap
+        if (!Pi) {
+            console.error("SDK Pi tidak ditemukan!");
+            return;
+        }
+
         const auth = await Pi.authenticate(['username', 'payments'], onIncompletePaymentFound);
         
-        // Update tampilan jika berhasil login
         if (auth && auth.user) {
             document.getElementById('user-profile').innerText = "Halo, " + auth.user.username;
+            // Sembunyikan tombol login jika sudah berhasil
+            const loginBtn = document.getElementById('btn-login');
+            if (loginBtn) loginBtn.style.display = "none";
+            
             console.log("Login sukses: ", auth.user.username);
         }
     } catch (err) {
@@ -18,14 +29,11 @@ async function login() {
     }
 }
 
-// Fungsi wajib untuk menangani pembayaran yang belum selesai
 function onIncompletePaymentFound(payment) {
     console.log("Menemukan pembayaran gantung:", payment);
-    // Di sini Anda bisa mengirim payment.identifier ke backend untuk di-complete jika perlu
 };
 
 async function buyProduct(productId, amount) {
-    // Memberi notifikasi di log agar kita tahu tombol bekerja
     console.log("Memulai proses pembelian: " + productId);
 
     const paymentData = {
@@ -36,8 +44,6 @@ async function buyProduct(productId, amount) {
 
     const callbacks = {
         onReadyForServerApproval: (paymentId) => {
-            console.log("Payment ID diterima, meminta approval server...");
-            // Menghubungkan ke api/approve.js
             return fetch('/api/approve', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -45,29 +51,22 @@ async function buyProduct(productId, amount) {
             });
         },
         onReadyForServerCompletion: (paymentId, txid) => {
-            console.log("Transaksi Blockchain selesai, memproses penyelesaian...");
-            // Menghubungkan ke api/complete.js
             return fetch('/api/complete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ paymentId, txid })
             });
         },
-        onCancel: (paymentId) => { 
-            console.log("Pembayaran dibatalkan oleh pengguna."); 
-        },
-        onError: (error, payment) => { 
-            console.error("Terjadi kesalahan pembayaran:", error);
-            if (payment) console.log("Data pembayaran error:", payment);
-        }
+        onCancel: (paymentId) => { console.log("Pembayaran dibatalkan."); },
+        onError: (error, payment) => { console.error("Error pembayaran:", error); }
     };
 
     try {
         await Pi.createPayment(paymentData, callbacks);
     } catch (err) {
-        console.error("Gagal memproses CreatePayment:", err);
+        console.error("Gagal createPayment:", err);
     }
 }
 
-// Jalankan fungsi login saat script dimuat
+// Jalankan login otomatis saat script dimuat
 login();
