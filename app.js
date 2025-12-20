@@ -3,21 +3,16 @@ const Pi = window.Pi;
 Pi.init({ version: "2.0", sandbox: true });
 
 async function login() {
-    // Tambahkan notifikasi log untuk debugging di konsol
     console.log("Fungsi login terpanggil...");
     
     try {
-        // Cek apakah SDK sudah siap
-        if (!Pi) {
-            console.error("SDK Pi tidak ditemukan!");
-            return;
-        }
-
+        // Autentikasi User
         const auth = await Pi.authenticate(['username', 'payments'], onIncompletePaymentFound);
         
         if (auth && auth.user) {
             document.getElementById('user-profile').innerText = "Halo, " + auth.user.username;
-            // Sembunyikan tombol login jika sudah berhasil
+            
+            // Sembunyikan tombol login jika ada
             const loginBtn = document.getElementById('btn-login');
             if (loginBtn) loginBtn.style.display = "none";
             
@@ -25,16 +20,34 @@ async function login() {
         }
     } catch (err) {
         console.error("Kesalahan Login:", err);
-        document.getElementById('user-profile').innerText = "Gagal Login. Gunakan Pi Browser!";
+        document.getElementById('user-profile').innerText = "Gagal Login. Pastikan buka di Pi Browser!";
     }
 }
 
+// Menangani pembayaran yang sudah dibayar di blockchain tapi belum selesai di sistem (Fix Step 10)
 function onIncompletePaymentFound(payment) {
     console.log("Menemukan pembayaran gantung:", payment);
+    
+    // Kirim secara otomatis ke backend untuk diselesaikan (Complete)
+    return fetch('/api/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            paymentId: payment.identifier, 
+            txid: payment.transaction.txid 
+        })
+    });
 };
 
 async function buyProduct(productId, amount) {
     console.log("Memulai proses pembelian: " + productId);
+    
+    // Pastikan user sudah login sebelum bisa beli
+    const userText = document.getElementById('user-profile').innerText;
+    if (userText.includes("Menghubungkan") || userText.includes("Login")) {
+        alert("Mohon login terlebih dahulu dengan klik tombol Login Manual!");
+        return;
+    }
 
     const paymentData = {
         amount: amount,
@@ -44,6 +57,7 @@ async function buyProduct(productId, amount) {
 
     const callbacks = {
         onReadyForServerApproval: (paymentId) => {
+            console.log("Meminta approval untuk ID:", paymentId);
             return fetch('/api/approve', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -51,6 +65,7 @@ async function buyProduct(productId, amount) {
             });
         },
         onReadyForServerCompletion: (paymentId, txid) => {
+            console.log("Menyelesaikan transaksi blockchain...");
             return fetch('/api/complete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -58,7 +73,10 @@ async function buyProduct(productId, amount) {
             });
         },
         onCancel: (paymentId) => { console.log("Pembayaran dibatalkan."); },
-        onError: (error, payment) => { console.error("Error pembayaran:", error); }
+        onError: (error, payment) => { 
+            console.error("Error pembayaran:", error);
+            alert("Terjadi kesalahan. Silakan coba lagi.");
+        }
     };
 
     try {
@@ -69,4 +87,6 @@ async function buyProduct(productId, amount) {
 }
 
 // Jalankan login otomatis saat script dimuat
-login();
+window.onload = function() {
+    login();
+};
