@@ -10,7 +10,8 @@
 <body>
     <header>
         <h1>CTF Official Store</h1>
-        <div id="user-profile">Login dulu di Pi Browser...</div>
+        <div id="user-profile">Menghubungkan ke Pi Network...</div>
+        <button id="btn-login" onclick="login()" style="display:none; margin-top:10px;">Klik untuk Login Manual</button>
     </header>
 
     <main id="product-list">
@@ -25,5 +26,14 @@
     <div id="status-log"></div>
 
     <script src="app.js"></script>
+    <script>
+        // Menampilkan tombol login manual jika dalam 5 detik nama belum muncul
+        setTimeout(() => {
+            if (document.getElementById('user-profile').innerText.includes("Menghubungkan")) {
+                document.getElementById('btn-login').style.display = "block";
+                document.getElementById('user-profile').innerText = "Koneksi lambat, silakan klik tombol di bawah:";
+            }
+        }, 5000);
+    </script>
 </body>
 </html>
