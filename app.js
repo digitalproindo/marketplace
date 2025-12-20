@@ -2,7 +2,7 @@ const Pi = window.Pi;
 
 async function initPi() {
     try {
-        // MENGHAPUS sandbox:true karena aplikasi sudah live
+        // MENGHAPUS sandbox:true agar sinkron dengan lingkungan Vercel
         await Pi.init({ version: "2.0" });
         console.log("Pi SDK berhasil diinisialisasi dalam mode produksi");
     } catch (e) {
@@ -11,7 +11,6 @@ async function initPi() {
 }
 
 async function login() {
-    console.log("Fungsi login terpanggil...");
     const profile = document.getElementById('user-profile');
     const loginBtn = document.getElementById('btn-login');
 
