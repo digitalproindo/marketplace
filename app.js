@@ -1,10 +1,10 @@
 const Pi = window.Pi;
 
-// Fungsi inisialisasi yang lebih stabil
 async function initPi() {
     try {
-        await Pi.init({ version: "2.0", sandbox: true });
-        console.log("Pi SDK berhasil diinisialisasi");
+        // MENGHAPUS sandbox:true karena aplikasi sudah live
+        await Pi.init({ version: "2.0" });
+        console.log("Pi SDK berhasil diinisialisasi dalam mode produksi");
     } catch (e) {
         console.error("Gagal inisialisasi Pi SDK:", e);
     }
@@ -15,55 +15,35 @@ async function login() {
     const profile = document.getElementById('user-profile');
     const loginBtn = document.getElementById('btn-login');
 
-    // Pastikan Pi SDK tersedia
     if (!window.Pi || !window.Pi.authenticate) {
-        alert("Gunakan Pi Browser untuk mengakses fitur ini!");
-        if (profile) profile.innerText = "Wajib gunakan Pi Browser!";
+        if (profile) profile.innerText = "Gunakan Pi Browser!";
         return;
     }
 
     try {
-        // Lakukan autentikasi
         const auth = await Pi.authenticate(['username', 'payments'], onIncompletePaymentFound);
-        
         if (auth && auth.user) {
             profile.innerText = "Halo, " + auth.user.username;
-            profile.style.color = "#d4af37"; // Warna emas jika sukses
-            
+            profile.style.color = "#d4af37";
             if (loginBtn) loginBtn.style.display = "none";
-            console.log("Login sukses: ", auth.user.username);
         }
     } catch (err) {
         console.error("Kesalahan Login:", err);
-        if (profile) profile.innerText = "Login Gagal. Klik tombol di bawah:";
+        if (profile) profile.innerText = "Klik Login Manual di bawah:";
         if (loginBtn) loginBtn.style.display = "inline-block";
     }
 }
 
 function onIncompletePaymentFound(payment) {
-    console.log("Menemukan pembayaran gantung:", payment);
     return fetch('/api/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            paymentId: payment.identifier, 
-            txid: payment.transaction.txid 
-        })
+        body: JSON.stringify({ paymentId: payment.identifier, txid: payment.transaction.txid })
     });
 };
 
 async function buyProduct(productId, amount) {
-    if (!window.Pi) {
-        alert("Buka di Pi Browser untuk melakukan transaksi!");
-        return;
-    }
-
-    const userText = document.getElementById('user-profile').innerText;
-    if (userText.includes("Menghubungkan") || userText.includes("Gagal") || userText.includes("Klik")) {
-        alert("Silakan login terlebih dahulu!");
-        return;
-    }
-
+    if (!window.Pi) return;
     const paymentData = {
         amount: amount,
         memo: "Pembelian " + productId + " di CTF Store",
@@ -85,11 +65,8 @@ async function buyProduct(productId, amount) {
                 body: JSON.stringify({ paymentId, txid })
             });
         },
-        onCancel: (paymentId) => { console.log("Pembayaran dibatalkan."); },
-        onError: (error, payment) => { 
-            console.error("Error pembayaran:", error);
-            alert("Terjadi gangguan jaringan. Coba lagi.");
-        }
+        onCancel: (paymentId) => { console.log("Dibatalkan"); },
+        onError: (error, payment) => { alert("Gagal transaksi, coba lagi."); }
     };
 
     try {
@@ -99,11 +76,7 @@ async function buyProduct(productId, amount) {
     }
 }
 
-// Jalankan inisialisasi dan login otomatis dengan aman
 window.onload = async function() {
     await initPi();
-    // Beri jeda 1.5 detik agar browser siap sebelum login otomatis dijalankan
-    setTimeout(() => {
-        login();
-    }, 1500);
+    setTimeout(() => { login(); }, 1000);
 };
