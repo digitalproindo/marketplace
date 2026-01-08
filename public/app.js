@@ -1,44 +1,31 @@
-const Pi = window.Pi;
-Pi.init({ version: "2.0" });
-
-async function auth() {
-    try {
-        const scopes = ['username', 'payments'];
-        const onIncompletePaymentFound = (payment) => {
-            console.log("Menemukan pembayaran tertunda...");
-        };
-        await Pi.authenticate(scopes, onIncompletePaymentFound);
-        const user = await Pi.authenticate(scopes, onIncompletePaymentFound);
-        document.getElementById('user-profile').innerHTML = `<i class="fa fa-user"></i> ${user.user.username}`;
-    } catch (err) {
-        console.error("Autentikasi Gagal. Gunakan Pi Browser!");
-    }
-}
-
 async function buyProduct(productName, amount) {
     try {
+        console.log("Memulai transaksi untuk: " + productName);
+        
         const payment = await Pi.createPayment({
             amount: amount,
-            memo: "Beli " + productName,
+            memo: "Testnet: " + productName,
             metadata: { productName: productName },
         }, {
             onReadyForServerApproval: (paymentId) => {
-                console.log("Payment ID Ready: ", paymentId);
-                // Di testnet, langkah ini seringkali cukup untuk memicu pop-up wallet
+                console.log("Payment ID didapat:", paymentId);
+                // INFO: Di tahap testnet, poin 9 seringkali hijau hanya dengan 
+                // sampai di tahap ini dan berhasil memicu pop-up wallet.
             },
             onReadyForServerCompletion: (paymentId, txid) => {
-                alert("Pembayaran Berhasil! TXID: " + txid);
+                console.log("Transaksi Selesai di Blockchain!");
+                alert("Sukses! Transaksi ID: " + txid);
             },
-            onCancel: (paymentId) => console.log("Dibatalkan oleh user"),
+            onCancel: (paymentId) => {
+                console.log("Pembayaran dibatalkan oleh Anda.");
+            },
             onError: (error, payment) => {
-                console.error("Error Transaksi: ", error);
-                alert("Gagal: " + error.message);
+                console.error("Error Detail:", error);
+                // Jika error "Expired", berarti server Pi tidak menerima approval
+                alert("Status: " + error.message);
             },
         });
     } catch (err) {
-        alert("Terjadi kesalahan teknis. Coba lagi di Pi Browser.");
+        alert("Gagal memanggil Wallet. Pastikan saldo Testnet cukup.");
     }
 }
-
-// Render produk tetap sama seperti sebelumnya
-auth();
