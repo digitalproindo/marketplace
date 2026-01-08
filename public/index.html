@@ -2,8 +2,9 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Digitalproindo | Marketplace Pi Terbesar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
@@ -12,63 +13,83 @@
     <header class="navbar">
         <div class="container navbar-flex">
             <h1 class="logo">Digital<span>pro</span></h1>
+            
             <div class="search-bar">
                 <input type="text" placeholder="Cari barang mewah dengan Pi...">
                 <button><i class="fa fa-search"></i></button>
             </div>
+
             <div class="nav-icons">
-                <i class="fa fa-shopping-cart"></i>
-                <i class="fa fa-bell"></i>
-                <div id="user-profile">Login Pi...</div>
+                <div class="icon-item"><i class="fa fa-shopping-cart"></i><span class="badge">0</span></div>
+                <div class="icon-item"><i class="fa fa-bell"></i></div>
+                <div class="user-auth" id="user-profile">
+                    <i class="fa fa-user-circle"></i>
+                    <span>Login Pi</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="container">
+    <main class="container content-wrapper">
         <section class="banner">
-            <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200" alt="Promo">
+            <div class="banner-track">
+                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200" alt="Promo Utama">
+            </div>
         </section>
 
-        <h3 class="section-title">Kategori Pilihan</h3>
-        <div class="category-grid">
-            <div class="cat-item"><i class="fa fa-car"></i><p>Otomotif</p></div>
-            <div class="cat-item"><i class="fa fa-home"></i><p>Properti</p></div>
-            <div class="cat-item"><i class="fa fa-mobile-alt"></i><p>Gadget</p></div>
-            <div class="cat-item"><i class="fa fa-tshirt"></i><p>Fashion</p></div>
-            <div class="cat-item"><i class="fa fa-utensils"></i><p>Sembako</p></div>
-            <div class="cat-item"><i class="fa fa-laptop"></i><p>Elektronik</p></div>
-        </div>
-
-        <h3 class="section-title">Rekomendasi Untuk Anda</h3>
-        <div class="product-grid" id="product-list">
+        <section class="category-section">
+            <h3 class="section-title">Kategori Pilihan</h3>
+            <div class="category-grid">
+                <div class="cat-item"><div class="cat-icon bg-1"><i class="fa fa-car"></i></div><p>Otomotif</p></div>
+                <div class="cat-item"><div class="cat-icon bg-2"><i class="fa fa-home"></i></div><p>Properti</p></div>
+                <div class="cat-item"><div class="cat-icon bg-3"><i class="fa fa-mobile-alt"></i></div><p>Gadget</p></div>
+                <div class="cat-item"><div class="cat-icon bg-4"><i class="fa fa-tshirt"></i></div><p>Fashion</p></div>
+                <div class="cat-item"><div class="cat-icon bg-5"><i class="fa fa-utensils"></i></div><p>Sembako</p></div>
+                <div class="cat-item"><div class="cat-icon bg-6"><i class="fa fa-laptop"></i></div><p>Elektronik</p></div>
             </div>
+        </section>
+
+        <section class="product-section">
+            <div class="section-header">
+                <h3 class="section-title">Rekomendasi Untuk Anda</h3>
+                <a href="#" class="see-all">Lihat Semua</a>
+            </div>
+            <div class="product-grid" id="product-list">
+                </div>
+        </section>
     </main>
+
+    <nav class="bottom-nav">
+        <a href="#" class="nav-link active"><i class="fa fa-home"></i><span>Home</span></a>
+        <a href="#" class="nav-link"><i class="fa fa-th-large"></i><span>Kategori</span></a>
+        <a href="#" class="nav-link"><i class="fa fa-exchange-alt"></i><span>Transaksi</span></a>
+        <a href="#" class="nav-link"><i class="fa fa-user"></i><span>Akun</span></a>
+    </nav>
 
     <script src="app.js"></script>
     <script>
-        // Script untuk generate banyak produk otomatis
         const products = [
-            { name: "Supercar Porsche 911", price: "0.0003", img: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400" },
-            { name: "Villa Modern Jakarta", price: "0.0005", img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400" },
-            { name: "iPhone 15 Pro Max", price: "0.0002", img: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?w=400" },
-            { name: "Beras CTF Premium 10KG", price: "0.00001", img: "https://ctfofficial.com/wp-content/uploads/2025/11/beras10.jpg" },
-            { name: "Macbook Pro M3", price: "0.00025", img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400" },
-            { name: "Rolex Submariner", price: "0.00015", img: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400" },
-            { name: "Harley Davidson Fat Boy", price: "0.0003", img: "https://images.unsplash.com/photo-1558981285-6f0c94958bb6?w=400" },
-            { name: "Tesla Model 3", price: "0.00028", img: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400" },
-            { name: "Samsung S24 Ultra", price: "0.00018", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400" },
-            { name: "Smart TV Sony 65 Inch", price: "0.00012", img: "https://images.unsplash.com/photo-1593359674241-55cd0cc7b67d?w=400" }
+            { id: 1, name: "Supercar Porsche 911", price: "0.0003", loc: "Jakarta", img: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400" },
+            { id: 2, name: "Villa Modern Bali", price: "0.0005", loc: "Bali", img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400" },
+            { id: 3, name: "iPhone 15 Pro Max", price: "0.0002", loc: "Surabaya", img: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?w=400" },
+            { id: 4, name: "Beras CTF Premium 10KG", price: "0.00001", loc: "Medan", img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400" },
+            { id: 5, name: "Macbook Pro M3", price: "0.00025", loc: "Tangerang", img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400" },
+            { id: 6, name: "Tesla Model 3", price: "0.00028", loc: "Bekasi", img: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400" }
         ];
 
         const container = document.getElementById('product-list');
         products.forEach(p => {
             container.innerHTML += `
-                <div class="product-card">
-                    <img src="${p.img}" alt="${p.name}">
+                <div class="product-card" onclick="buyProduct('${p.name}', ${p.price})">
+                    <div class="p-img">
+                        <img src="${p.img}" alt="${p.name}">
+                    </div>
                     <div class="p-info">
-                        <h4>${p.name}</h4>
-                        <p class="price">π ${p.price}</p>
-                        <button onclick="buyProduct('${p.name}', ${p.price})">Beli Sekarang</button>
+                        <div class="p-name">${p.name}</div>
+                        <div class="p-price">π ${p.price}</div>
+                        <div class="p-meta">
+                            <span class="p-loc"><i class="fa fa-map-marker-alt"></i> ${p.loc}</span>
+                        </div>
                     </div>
                 </div>
             `;
